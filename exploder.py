@@ -1,32 +1,46 @@
 #!/usr/bin/python3
 
+from copy import deepcopy
+from word_dict import *
 import matrixParser as mp
+import litParser as lp
+import pulserParser as pp
 
-class WordDict(dict):
-    """A dictionary object meant to store 32 bit words as a 
-       addr->val map"""
-    def setBit(self, addr, bit):
-        """Set a specific bit at a specific address"""
-        self.setdefault(addr, 0)
-        self[addr]|=1<<bit
-    def setVal(self, addr, val):
-        self[addr]=val
+parsers=[mp, lp, pp]
+
+import yaml
+
+
     
 
-def canParse(name, function):
-    try:
-        f(l["name"])
-        return True
-    except ParseError:
-        return False
-    
-def parse(inp):
-    res=WordDict()    
+def parse(inp, wd=None):
+    #print("parsing: %s"%inp)
+    if not wd:
+        wd=WordDict()
+    else:
+        wd=deepcopy(wd)
     for l in inp:
-        pass
+        for p in parsers+[None]:
+            if p==None:
+                raise Exception("Could not parse obj {%s}"%l)
+            try:
+                p.parse(l, wd)
+                break
+            except ParseError:
+                pass # go on
+            except Exception as e:
+                raise Exception("Parser %s failed to parse %s"%(p.__name__, l)) from e
+    return wd
 
 if __name__=="__main__":
-    wd=WordDict()
-    mp.parse({"name":"bp0", "out":["mbs12"]},  wd)
-    print(wd)
-             
+    settings_in, mappings=yaml.load_all(open("exploder.yaml"))
+    default=parse(settings_in["default"])
+    settings=dmap(lambda inp: (inp[0], parse(inp[1], wd=default)),
+                 settings_in.items())
+    
+    #    mp.parse({"name":"bp0", "in":["lemo0", "lemo2"], "out":["mbs12", "lemo3"]},  wd)
+    for name, wd in settings.items():
+        print("==%s=="%name)
+        #wd.dump()
+    settings["master"].verify(1)
+

@@ -1,6 +1,6 @@
 """Parse an object connecting an internal line (dt%d, bp%d) to inputs and outputs"""
 
-from misc import *
+from word_dict import *
 
 internalList=[
     ("dt(\d+)", lambda n:  0+inRange(n, 0, 15)),
@@ -25,9 +25,9 @@ outputList=[
     ("lemo([0-7])",        lambda n:24+n),
     ("lvds([0-7])",        lambda n:32+n),
     ("scaler([0-7])",      lambda n:40+n),
-    ("scaler_res",         lambda n:48+n),
+    ("scaler_rst([0-7])",  lambda n:48+n),
     ("scaler_gate([0-7])", lambda n:56+n),
-    ("sfp(\d+)[.](\d+)",   lambda n,m: 64+16*inRange(n, 0, 4)+inRange(m, 0, 15))
+    ("sfp(\d+)[.](\d+)",   lambda n,m: 64+16*inRange(n, 0, 3)+inRange(m, 0, 15))
 ]
 
 def parseIO(name, l):
@@ -38,7 +38,7 @@ def parseIO(name, l):
                 return f(*map(int, m.groups()))
             except ValueError as e:
                 raise Exception("Could not parse '%s'"%name) from e
-    raise Exception("Could not parse name %s:"%name)
+    raise Exception("Could not parse name %s."%name)
 
 parseInput=   lambda n:parseIO(n, inputList)
 parseInternal=lambda n:parseIO(n, internalList)
@@ -46,17 +46,43 @@ parseOutput=  lambda n:parseIO(n, outputList)
 
 def parse(d, wd):
     """parse an internal line statement, connecting [inputs]->internal->[outputs]"""
-    intId=parseInternal(d["name"])
+    try:
+        intId=parseInternal(d["name"])
+    except Exception as e:
+        raise ParseError from e
+    if d["name"] in wd.lines:
+        print("Internal line %s is used in multiple statements. Overall assignment will be ORed."%d["name"])
+    wd.lines.append(d["name"])
     inIds=lmap(parseInput, d.get("in", []))
     outIds=lmap(parseOutput, d.get("out", []))
-    print(intId, inIds, outIds)
+    for i in filter(lambda i:0<=i and i<8, map(lambda i:i-40, outIds)):
+        if "label" not in d:
+            raise Exception("Scaler %d assignment (using %s) is missing label."%(i, d["name"]))
+        if i in wd.labels:
+            raise Exception("Warning: scaler %d is assigned to multiple lines"%i)
+            wd.labels[i]+="|"+d["label"]
+        else:
+            wd.labels[i]=d["label"]
+            
+    #print(intId, inIds, outIds)
+
+    # first, input matrix.
+    # as we cut corners on parsing intId, the intId (n in documentation) will always come out less than 32.
     for i in inIds:
-#        if i < 32:
+        if i < 32: 
             wd.setBit(0x00+intId, i)
-            # set address 0x0+intId, bit i. 
+        else:
+            i0=i//32
+            i1=i%32
+            wd.setBit(0x1000+i0+4*intId, i1)
+            # set address 0x0+intId, bit i.
+    # output matrix
     for o in outIds:
-#        if o < 32:
+        if o < 64:
             wd.setBit(0x40+o, intId)
+        else:
+            wd.setBit(0x1200+4*o, intId)
+
 if __name__=="__main__":
     print(parseInput("tbus1.3"))
     print(parseInternal("bp12"))
