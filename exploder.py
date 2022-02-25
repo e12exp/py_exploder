@@ -42,5 +42,6 @@ if __name__=="__main__":
     for name, wd in settings.items():
         print("==%s=="%name)
         #wd.dump()
-    settings["master"].verify(1)
+    settings["master"].write(0)
+    settings["master"].verify(0)
 
