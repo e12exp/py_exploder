@@ -3,15 +3,12 @@ default:
  - {name: set, addr: 0x00000020, val: 0x10000000} # MBS Total dead time -> global dt
  - {name: set, addr: 0x00000080, val: 0x00000a64} # dead time
  - {name: set, addr: 0x00000081, val: 0x00000014} # output pulse length
- - {name: set, addr: 0x00000082, val: 0x00010001} # TS clock, src=internal, TTL LEMO out
+ - {name: set, addr: 0x00000082, val: 0x00010001} # TS clock: on, src=internal, LEMO out: TTL
  - {name: pulser3, freq: 1}
  - {name: bp15, in: [pulser3], out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7]}
  
 master:
 # lemo in 0: ??
- - name: bp1
-   in: [lemo0]
-   out: []
 # lemo in 1: ??
 # lemo  in 2: external trigger
 # lemo  in 3: sync trigger
@@ -22,6 +19,7 @@ master:
  - name: dt1 # Sync trigger
    in: [lemo3]
    out: [mbs3, tbusX.2,    sfp0.5, sfp1.5, sfp2.5, sfp3.5, lemo7]
+   label: sync
  - name: bp3 # external physics trigger to febex
    in: [lemo1]
    out: [tbusX.5]
@@ -32,6 +30,9 @@ master:
    in: [sfp0.4, sfp1.4, sfp2.4, sfp3.4]
    out: []
  # more undocumented stuff
+ - name: bp1
+   in: [lemo0]
+   out: []
  - name: bp14
    in: [lemo3]
    out: []
@@ -49,6 +50,8 @@ master:
  
 --- # assign to id
 butters: # messel
-  "1": 2
   9a:88:a3:2d:97:b9:0f:b2: master
   9c:e5:26:c3:fd:59:e2:b1: slave
+kyle:
+  foo: master
+  bar: slave
