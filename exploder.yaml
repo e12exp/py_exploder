@@ -6,48 +6,80 @@ default:
  - {name: set, addr: 0x00000082, val: 0x00010001} # TS clock: on, src=internal, LEMO out: TTL
  - {name: pulser3, freq: 1}
  - {name: bp15, in: [pulser3], out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7]}
- 
-master:
-# lemo in 0: ??
-# lemo in 1: ??
-# lemo  in 2: external trigger
-# lemo  in 3: sync trigger
-# lemo out 7: Pexaria latch
- - name: dt0 # readout request => readout
-   in:  [tbus0.4, tbus1.4, sfp0.4, sfp1.4, sfp2.4, sfp3.4]
-   out: [tbusX.0, mbs1,    sfp0.0, sfp1.0, sfp2.0, sfp3.0, lemo7]
- - name: dt1 # Sync trigger
-   in: [lemo3]
-   out: [mbs3, tbusX.2,    sfp0.5, sfp1.5, sfp2.5, sfp3.5, lemo7]
-   label: sync
- - name: bp3 # external physics trigger to febex
-   in: [lemo1]
-   out: [tbusX.5]
- - name: bp9 # proton trigger output
-   in: [tbus0.3, tbus1.3]
-   out: [lemo0]
- - name: bp0 # count trg req from slave
-   in: [sfp0.4, sfp1.4, sfp2.4, sfp3.4]
-   out: []
- # more undocumented stuff
+
+# master slave sfp
+# M->S: 0: Event trigger
+#       1: RO, T1
+#       3: RO, T3
+# S->M: 0: RO-Req
+#       1: Proton
+#       2: Proton-Veto
+
+# Master <-> Overlord
+# As M<->S, but without RO-Req or T1
+# 1,2 are proton, veto received from sfp1
+# 3,4 are proton, veto received from sfp2
+
+slave:
+ # uses bp0-7, sfp3, tbus
+ - require default
+ # TBus -> SFP
+ - name: bp0
+   in:  [tbus0.4, tbus1.4]
+   out: [sfp3.0, scaler0]
+   label: RO-req
  - name: bp1
-   in: [lemo0]
-   out: []
- - name: bp14
-   in: [lemo3]
-   out: []
+   in:  [tbus0.3, tbus1.3]
+   out: [sfp3.1]
+   label: good proton
  - name: bp2
-   in: [lemo2]
-   out: []
- - name: bp8 # ????
-   in: [sfp0.9]
-   out: [lemo1]
- 
-# - {name: bp0, in: [lemo0, lemo2], out: [mbs12, lemo3, scaler3], label: test}
-# - {name: set, addr: 0x44, val: 0xffffffff }
-# - {name: pulser0, freq: 1e3 }
-# - {name: bp15, in: [], out: []}
- 
+   in:  [tbus0.2, tbus1.2]
+   out: [sfp3.1]
+   label: bad proton
+ # SFP -> TBus
+ - name: bp3
+   in:  [sfp3.0]
+   out: [tbusX.5]
+   label: validation
+ - name: bp4
+   in:  [sfp3.1]
+   out: [tbusX.0]
+   label: T1
+ - name: bp5
+   in:  [sfp3.2]
+   out: [tbusX.2]
+   label: T3
+
+master:
+ - require slave # bp0-7, tbus, sfp3
+ # sfp0: link to overlord
+ # sfp1-2: link to slaves
+ # lemo out 7: Pexaria latch
+ - name: dt0 # readout request => readout (T1)
+   in:  [ sfp1.0, sfp2.0]
+   out: [ mbs1,  sfp1.1, sfp2.1, lemo7]
+ - name: dt1 # Sync trigger (T3)
+   in: [sfp0.3]
+   out: [ mbs3,  sfp1.3, sfp2.3, lemo7]
+   label: sync
+ - { name: bp8,  in: [sfp0.0], out: [ sfp1.0, sfp2.0 ], label: external }
+ - { name: bp9,  in: [sfp1.1], out: [ sfp0.1 ], label: good proton from sfp1 }
+ - { name: bp10, in: [sfp1.2], out: [ sfp0.2 ], label: bad proton from sfp1 }
+ - { name: bp11, in: [sfp2.1], out: [ sfp0.3 ], label: good proton from sfp2 }
+ - { name: bp12, in: [sfp2.2], out: [ sfp0.4 ], label: bad proton from sfp2 }
+
+overlord:
+ - require default
+ # sfp 0: MES master exploder
+ # sfp 1: WIX master exploder
+ - { name: bp0, in: [sfp0.1], out: [lemo0] } # MES upper
+ - { name: bp1, in: [sfp0.3], out: [lemo1] } # MES lower
+ - { name: bp2, in: [sfp1.1], out: [lemo2] } # Wix upper
+ - { name: bp3, in: [sfp1.3], out: [lemo3] } # Wix lower
+ - { name: bp7, in: [sfp0.2, sfp0.4, sfp1.2, sfp1.4], out: [lemo7] } # bad proton
+ - { name: bp8,  in: [lemo0], out: [ sfp0.0, sfp1.0 ], label: external }
+ - { name: bp9,  in: [lemo3], out: [ sfp0.3, sfp1.3 ], label: sync trigger }
+
 --- # assign to id
 butters: # messel
   9a:88:a3:2d:97:b9:0f:b2: master
@@ -55,3 +87,5 @@ butters: # messel
 kyle:
   foo: master
   bar: slave
+stan:
+  9f:47:f1:06:fd:b7:9d:30: overlord

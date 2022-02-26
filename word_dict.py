@@ -73,7 +73,7 @@ class WordDict(dict):
         for x in self.labels.items():
             print("Scaler %d: %s"%x)
 
-    def read_block(self, exp_id, start, num):
+    def _read_block(self, exp_id, start, num):
         """Read a block from an exploder, overwriting settings"""
         res=check_output(["/usr/bin/exploder", "read", "%s"%exp_id, "0x%x"%start, "0x%x"%num]).decode("utf-8")
         for l in res.split("\n"):
@@ -82,24 +82,25 @@ class WordDict(dict):
             addr, val=map(lambda i: int(i, 0), l.split(":"))
             self[addr]=val
 
-    def read_conf(self, exp_id):
-        self.read_block(exp_id, 0,       0x100)
-        self.read_block(exp_id, 0x1000, 0x1000)
+    def read(self, exp_id):
+        self._read_block(exp_id, 0,       0x100)
+        self._read_block(exp_id, 0x1000, 0x1000)
 
-    def write_block(self, exp_id, start, num):
+    def _write_block(self, exp_id, start, num):
         """Writes a block to an exploder id"""
         input=""
         for addr in range(start, start+num):
             input+="0x%x\n"%self.get(addr, 0)
-        proc=run(["/usr/bin/exploder", "write", "%s"%exp_id, "0x%x"%start, "0x%x"%num], check=True, input=input)
+        proc=run(["/usr/bin/exploder","write", "%s"%exp_id, "0x%x"%start, "0x%x"%num, "-"],
+                 check=True, input=input, text=True)
         
-    def write_conf(self, exp_id, check=True):
-        self.write_block(exp_id, 0,       0x100)
-        self.write_block(exp_id, 0x1000, 0x1000)
+    def write(self, exp_id, check=True):
+        self._write_block(exp_id, 0,       0x100)
+        self._write_block(exp_id, 0x1000, 0x1000)
 
     def verify(self, exp_id, verbose=True):
         wd=WordDict()
-        wd.read_conf(exp_id)
+        wd.read(exp_id)
         same=True
         for addr in sorted(set(list(wd.keys())+list(self.keys()))):
             v0=self.get(addr, 0)
@@ -114,5 +115,5 @@ class ParseError(Exception):
 
 if __name__=="__main__":
     wd=WordDict()
-    wd.read_conf(1)
+    wd.read(1)
     wd.dump()
