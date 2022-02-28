@@ -14,10 +14,9 @@ settings_in=None
 
 def parse(inp, wd=None):
     #print("parsing: %s"%inp)
-    if not wd:
+    if wd==None:
         wd=WordDict()
-    else:
-        wd=deepcopy(wd)
+
     for l in inp:
         for p in parsers+[None]:
             if p==None:

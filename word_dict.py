@@ -82,6 +82,17 @@ class WordDict(dict):
             addr, val=map(lambda i: int(i, 0), l.split(":"))
             self[addr]=val
 
+    def update_scalers(self, exp_id):
+        self._read_block(exp_id, 0x100,   0x100)
+
+    def scaler(self, i, latched=True, clock=False):
+        return self[0x100+4*i+2*latched+clock]
+
+    def dump_scalers(self, exp_id):
+        self.update_scalers(exp_id)
+        for i, n in self.labels.items():
+            print("%30s: %10d"%(n, self.scaler(i)))
+    
     def read(self, exp_id):
         self._read_block(exp_id, 0,       0x100)
         self._read_block(exp_id, 0x1000, 0x1000)

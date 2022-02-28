@@ -21,7 +21,7 @@ default:
 # 3,4 are proton, veto received from sfp2
 
 slave:
- # uses bp0-7, sfp3, tbus
+ # uses bp0-7, sfp3, tbus, scaler0-3
  - require default
  # TBus -> SFP
  - name: bp0
@@ -30,11 +30,11 @@ slave:
    label: RO-req
  - name: bp1
    in:  [tbus0.3, tbus1.3]
-   out: [sfp3.1]
+   out: [sfp3.1, scaler1]
    label: good proton
  - name: bp2
    in:  [tbus0.2, tbus1.2]
-   out: [sfp3.1]
+   out: [sfp3.1, scaler2]
    label: bad proton
  # SFP -> TBus
  - name: bp3
@@ -44,29 +44,32 @@ slave:
  - name: bp4
    in:  [sfp3.1]
    out: [tbusX.0]
-   label: T1
+   label: Slave T1
  - name: bp5
    in:  [sfp3.2]
    out: [tbusX.2]
-   label: T3
+   label: Slave T3
 
 master:
- - require slave # bp0-7, tbus, sfp3
+ - require slave # bp0-7, tbus, sfp3, scaler0-3
  # sfp0: link to overlord
  # sfp1-2: link to slaves
  # lemo out 7: Pexaria latch
  - name: dt0 # readout request => readout (T1)
    in:  [ sfp1.0, sfp2.0]
-   out: [ mbs1,  sfp1.1, sfp2.1, lemo7]
+   out: [ mbs1,  sfp1.1, sfp2.1, lemo7, scaler4]
+   label: Master T1
  - name: dt1 # Sync trigger (T3)
    in: [sfp0.3]
-   out: [ mbs3,  sfp1.3, sfp2.3, lemo7]
-   label: sync
- - { name: bp8,  in: [sfp0.0], out: [ sfp1.0, sfp2.0 ], label: external }
+   out: [ mbs3,  sfp1.3, sfp2.3, lemo7, scaler5]
+   label: Master T3 (sync)
+ # test: pulser 0 added to external trigger
+ - { name: bp8,  in: [sfp0.0, pulser0], out: [ sfp1.0, sfp2.0 ], label: external }
  - { name: bp9,  in: [sfp1.1], out: [ sfp0.1 ], label: good proton from sfp1 }
  - { name: bp10, in: [sfp1.2], out: [ sfp0.2 ], label: bad proton from sfp1 }
  - { name: bp11, in: [sfp2.1], out: [ sfp0.3 ], label: good proton from sfp2 }
  - { name: bp12, in: [sfp2.2], out: [ sfp0.4 ], label: bad proton from sfp2 }
+ - { name: bp13, in: [ sfp1.0, sfp2.0], out: [scaler6], label: Master RO Req }
 
 overlord:
  - require default
@@ -87,5 +90,5 @@ butters: # messel
 kyle:
   foo: master
   bar: slave
-stan:
+wendy:
   9f:47:f1:06:fd:b7:9d:30: overlord

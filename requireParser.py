@@ -7,7 +7,8 @@ def parse(d, wd):
     """parse a litaral assignment, set addr val"""
     if type(d)!=type("") or not d.startswith("require"):
         raise ParseError
-    mainParser.parse(mainParser.settings_in[d.split(" ")[1]])
+    req=mainParser.settings_in[d.split(" ")[1]]
+    mainParser.parse(req, wd)
     
 if __name__=="__main__":
     print(parseInput("tbus1.3"))
