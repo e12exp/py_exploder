@@ -9,8 +9,11 @@ def parse(d, wd):
     pulser=int(m.group(1))
     addr=0x83+pulser
     if "freq" in d:
-        freq=float(d["freq"])
-        val=int(100e6/freq-1)
+        if d["freq"]>0:
+            freq=float(d["freq"])
+            val=int(100e6/freq-1)
+        else:
+            val=0
     elif "val" in d:
         val=int(d["val"])
     else:
