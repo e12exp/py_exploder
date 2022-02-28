@@ -46,7 +46,7 @@ slave:
    out: [tbusX.0]
    label: Slave T1
  - name: bp5
-   in:  [sfp3.2]
+   in:  [sfp3.3]
    out: [tbusX.2]
    label: Slave T3
 
