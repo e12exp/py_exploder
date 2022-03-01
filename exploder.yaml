@@ -91,7 +91,7 @@ overlord:
  - { name: pulser3, freq: 1 }
  - name: bp15
    in: [pulser3]
-   out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7]
+   out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7, sfp0.4, sfp1.4]
 
 
 --- # assign to id
