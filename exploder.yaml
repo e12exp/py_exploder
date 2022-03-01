@@ -82,9 +82,13 @@ overlord:
  # sfp 1: WIX master exploder
  - { name: bp0, in: [sfp0.3], out: [lemo1, scaler1], label: MES upper protons }
  - { name: bp1, in: [sfp0.1], out: [lemo0, scaler0], label: MES lower protons }
- - { name: bp2, in: [sfp1.1], out: [lemo2] } # Wix upper
- - { name: bp3, in: [sfp1.3], out: [lemo3] } # Wix lower
- - { name: bp7, in: [sfp0.2, sfp0.4, sfp1.2, sfp1.4], out: [lemo7] } # bad proton
+ - { name: bp2, in: [sfp1.3], out: [lemo2, scaler2], label: WIX upper protons }
+ - { name: bp3, in: [sfp1.1], out: [lemo3, scaler3], label: WIX lower protons }
+ - { name: bp4, in: [sfp0.2], out: [lemo4] } # Wix upper veto
+ - { name: bp5, in: [sfp0.4], out: [lemo5] } # Wix lower veto
+ - { name: bp6, in: [sfp1.2], out: [lemo6] } # mes upper veto
+ - { name: bp7, in: [sfp1.4], out: [lemo7] } # mes lower veto
+ #- { name: bp7, in: [sfp0.2, sfp0.4, sfp1.2, sfp1.4], out: [lemo7] } # bad proton
  - name: pulser1
    freq: 200
  - { name: bp8,  in: [lemo0, pulser1 ], out: [ sfp0.0, sfp1.0, scaler6 ], label: external }
