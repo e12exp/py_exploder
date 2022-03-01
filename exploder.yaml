@@ -80,8 +80,8 @@ overlord:
  - require default
  # sfp 0: MES master exploder
  # sfp 1: WIX master exploder
- - { name: bp0, in: [sfp0.1], out: [lemo0, scaler0], label: MES upper protons }
- - { name: bp1, in: [sfp0.3], out: [lemo1, scaler1], label: MES lower protons }
+ - { name: bp0, in: [sfp0.3], out: [lemo1, scaler1], label: MES upper protons }
+ - { name: bp1, in: [sfp0.1], out: [lemo0, scaler0], label: MES lower protons }
  - { name: bp2, in: [sfp1.1], out: [lemo2] } # Wix upper
  - { name: bp3, in: [sfp1.3], out: [lemo3] } # Wix lower
  - { name: bp7, in: [sfp0.2, sfp0.4, sfp1.2, sfp1.4], out: [lemo7] } # bad proton
