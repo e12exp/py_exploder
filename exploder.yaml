@@ -4,13 +4,13 @@ default:
  - {name: set, addr: 0x00000080, val: 0x00000a64} # dead time
  - {name: set, addr: 0x00000081, val: 0x00000014} # output pulse length
  - {name: set, addr: 0x00000082, val: 0x00010001} # TS clock: on, src=internal, LEMO out: TTL
- - {name: pulser3, freq: 1}
- - {name: bp15, in: [pulser3], out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7]}
+ # - {name: pulser3, freq: 1}
 
 # master slave sfp
 # M->S: 0: Event trigger
 #       1: RO, T1
 #       3: RO, T3
+#       4: Reset
 # S->M: 0: RO-Req
 #       1: Proton
 #       2: Proton-Veto
@@ -33,8 +33,8 @@ slave:
    out: [sfp3.1, scaler1]
    label: good proton
  - name: bp2
-   in:  [tbus0.2, tbus1.2]
-   out: [sfp3.1, scaler2]
+   in:  [tbus0.6, tbus1.6]
+   out: [sfp3.2, scaler2]
    label: bad proton
  # SFP -> TBus
  - name: bp3
@@ -49,6 +49,9 @@ slave:
    in:  [sfp3.3]
    out: [tbusX.2]
    label: Slave T3
+ - name: bp15
+   in: [sfp3.4]
+   out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7]
 
 master:
  - require slave # bp0-7, tbus, sfp3, scaler0-3
@@ -66,10 +69,11 @@ master:
  # test: pulser 0 added to external trigger
  - { name: bp8,  in: [sfp0.0, pulser0], out: [ sfp1.0, sfp2.0 ], label: external }
  - { name: bp9,  in: [sfp1.1], out: [ sfp0.1 ], label: good proton from sfp1 }
- - { name: bp10, in: [sfp1.2], out: [ sfp0.2 ], label: bad proton from sfp1 }
+ - { name: bp10, in: [sfp1.2], out: [ sfp0.2, scaler6 ], label: bad proton from sfp1 }
  - { name: bp11, in: [sfp2.1], out: [ sfp0.3 ], label: good proton from sfp2 }
- - { name: bp12, in: [sfp2.2], out: [ sfp0.4 ], label: bad proton from sfp2 }
- - { name: bp13, in: [ sfp1.0, sfp2.0], out: [scaler6], label: Master RO Req }
+ - { name: bp12, in: [sfp2.2], out: [ sfp0.4, scaler7 ], label: bad proton from sfp2 }
+ - { name: bp13, in: [ sfp1.0, sfp2.0], out: [], label: Master RO Req }
+ - { name: bp14, in: [sfp0.4], out: [ sfp2.4, sfp3.4], label: Scaler Reset } 
 
 overlord:
  - require default
@@ -83,6 +87,11 @@ overlord:
  - { name: bp8,  in: [lemo0], out: [ sfp0.0, sfp1.0 ], label: external }
  - { name: pulser0, freq: 0 }
  - { name: bp9,  in: [lemo3, pulser0 ], out: [ sfp0.3, sfp1.3, scaler7 ], label: sync trigger }
+ - name: bp15
+ - { name: pulser3, freq: 1 }
+ - name: bp15
+   in: [pulser3]
+   out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7]
 
 
 --- # assign to id
