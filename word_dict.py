@@ -88,10 +88,10 @@ class WordDict(dict):
     def scaler(self, i, latched=True, clock=False):
         return self[0x100+4*i+2*latched+clock]
 
-    def dump_scalers(self, exp_id):
+    def dump_scalers(self, exp_id, *args, **kwargs):
         self.update_scalers(exp_id)
         for i, n in self.labels.items():
-            print("%30s: %10d"%(n, self.scaler(i)))
+            print("%30s: %10d"%(n, self.scaler(i, *args, **kwargs)))
     
     def read(self, exp_id):
         self._read_block(exp_id, 0,       0x100)

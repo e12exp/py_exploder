@@ -22,7 +22,7 @@ if __name__=="__main__":
         print("scaler values:")
         for k,v in mappings[hostname].items():
             print ("=== %s (%s)==="%(k,v))
-            settings[v].dump_scalers(k)
+            settings[v].dump_scalers(k, latched=True)
     else:
         print("unknown command: %s"%sys.argv[1])
         exit(1)

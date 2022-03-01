@@ -71,9 +71,9 @@ master:
  - { name: bp9,  in: [sfp1.1], out: [ sfp0.1 ], label: good proton from sfp1 }
  - { name: bp10, in: [sfp1.2], out: [ sfp0.2, scaler6 ], label: bad proton from sfp1 }
  - { name: bp11, in: [sfp2.1], out: [ sfp0.3 ], label: good proton from sfp2 }
- - { name: bp12, in: [sfp2.2], out: [ sfp0.4, scaler7 ], label: bad proton from sfp2 }
+ - { name: bp12, in: [sfp2.2], out: [ sfp0.4 ], label: bad proton from sfp2 }
  - { name: bp13, in: [ sfp1.0, sfp2.0], out: [], label: Master RO Req }
- - { name: bp14, in: [sfp0.4], out: [ sfp2.4, sfp3.4], label: Scaler Reset } 
+ - { name: bp14, in: [sfp0.4], out: [ sfp2.4, sfp3.4, scaler7 ], label: Scaler Reset } 
 
 overlord:
  - require default
@@ -87,7 +87,6 @@ overlord:
  - { name: bp8,  in: [lemo0], out: [ sfp0.0, sfp1.0 ], label: external }
  - { name: pulser0, freq: 0 }
  - { name: bp9,  in: [lemo3, pulser0 ], out: [ sfp0.3, sfp1.3, scaler7 ], label: sync trigger }
- - name: bp15
  - { name: pulser3, freq: 1 }
  - name: bp15
    in: [pulser3]
