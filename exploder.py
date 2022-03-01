@@ -19,10 +19,14 @@ if __name__=="__main__":
         for k,v in mappings[hostname].items():
             settings[v].verify(k)
     elif sys.argv[1]=="scaler":
-        print("scaler values:")
+        args={"latched":True}
+        if (len(sys.argv)>2):
+            if sys.argv[2]=="raw":
+                args["latched"]=False
+        print("scaler values: %s"%args)
         for k,v in mappings[hostname].items():
             print ("=== %s (%s)==="%(k,v))
-            settings[v].dump_scalers(k, latched=True)
+            settings[v].dump_scalers(k, **args)
     else:
         print("unknown command: %s"%sys.argv[1])
         exit(1)
