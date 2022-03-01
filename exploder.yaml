@@ -39,8 +39,8 @@ slave:
  # SFP -> TBus
  - name: bp3
    in:  [sfp3.0]
-   out: [tbusX.5]
-   label: validation
+   out: [tbusX.5, scaler3]
+   label: validation to febex
  - name: bp4
    in:  [sfp3.1]
    out: [tbusX.0]
@@ -52,6 +52,7 @@ slave:
  - name: bp15
    in: [sfp3.4]
    out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7]
+   label: slave scaler reset
 
 master:
  - require slave # bp0-7, tbus, sfp3, scaler0-3
@@ -63,17 +64,17 @@ master:
    out: [ mbs1,  sfp1.1, sfp2.1, lemo7, scaler4]
    label: Master T1
  - name: dt1 # Sync trigger (T3)
-   in: [sfp0.3]
-   out: [ mbs3,  sfp1.3, sfp2.3, lemo7, scaler5]
+   in: [ sfp0.3 ]
+   out: [ mbs3,  sfp1.3, sfp2.3, lemo7, scaler5 ]
    label: Master T3 (sync)
  # test: pulser 0 added to external trigger
  - { name: bp8,  in: [sfp0.0, pulser0], out: [ sfp1.0, sfp2.0 ], label: external }
  - { name: bp9,  in: [sfp1.1], out: [ sfp0.1 ], label: good proton from sfp1 }
  - { name: bp10, in: [sfp1.2], out: [ sfp0.2, scaler6 ], label: bad proton from sfp1 }
  - { name: bp11, in: [sfp2.1], out: [ sfp0.3 ], label: good proton from sfp2 }
- - { name: bp12, in: [sfp2.2], out: [ sfp0.4 ], label: bad proton from sfp2 }
+ - { name: bp12, in: [sfp2.2], out: [ sfp0.4, scaler7 ], label: bad proton from sfp2 }
  - { name: bp13, in: [ sfp1.0, sfp2.0], out: [], label: Master RO Req }
- - { name: bp14, in: [sfp0.4], out: [ sfp2.4, sfp3.4, scaler7 ], label: Scaler Reset } 
+ - { name: bp14, in: [sfp0.4], out: [ sfp1.4, sfp2.4 ], label: Master Scaler Reset } 
 
 overlord:
  - require default
