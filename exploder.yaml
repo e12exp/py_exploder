@@ -84,13 +84,15 @@ overlord:
  - { name: bp2, in: [sfp1.1], out: [lemo2] } # Wix upper
  - { name: bp3, in: [sfp1.3], out: [lemo3] } # Wix lower
  - { name: bp7, in: [sfp0.2, sfp0.4, sfp1.2, sfp1.4], out: [lemo7] } # bad proton
- - { name: bp8,  in: [lemo0], out: [ sfp0.0, sfp1.0 ], label: external }
- - { name: pulser0, freq: 0 }
+ - name: pulser1
+   freq: 200
+ - { name: bp8,  in: [lemo0, pulser1 ], out: [ sfp0.0, sfp1.0, scaler6 ], label: external }
+ - { name: pulser0, freq: 100 }
  - { name: bp9,  in: [lemo3, pulser0 ], out: [ sfp0.3, sfp1.3, scaler7 ], label: sync trigger }
  - { name: pulser3, freq: 1 }
  - name: bp15
    in: [pulser3]
-   out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7, sfp0.4, sfp1.4]
+   out: [scaler_rst0, scaler_rst1, scaler_rst2, scaler_rst3, scaler_rst4, scaler_rst5, scaler_rst6, scaler_rst7, sfp0.4, sfp1.4 ]
 
 
 --- # assign to id
