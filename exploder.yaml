@@ -39,7 +39,7 @@ slave:
  # SFP -> TBus
  - name: bp3
    in:  [sfp3.0]
-   out: [tbusX.5, scaler3]
+   out: [tbusX.5, scaler3, lemo0]
    label: validation to febex
  - name: bp4
    in:  [sfp3.1]
@@ -78,22 +78,24 @@ master:
 
 overlord:
  - require default
+ # - {name: set, addr: 0x00000082, val: 0x00000001} # TS clock: on, src=internal, LEMO out: NIM
  # sfp 0: MES master exploder
  # sfp 1: WIX master exploder
- - { name: bp0, in: [sfp0.3], out: [lemo1, scaler1], label: MES upper protons }
- - { name: bp1, in: [sfp0.1], out: [lemo0, scaler0], label: MES lower protons }
+ - { name: bp0, in: [sfp0.3], out: [lemo0, scaler0], label: MES upper protons }
+ - { name: bp1, in: [sfp0.1], out: [lemo1, scaler1], label: MES lower protons }
  - { name: bp2, in: [sfp1.3], out: [lemo2, scaler2], label: WIX upper protons }
  - { name: bp3, in: [sfp1.1], out: [lemo3, scaler3], label: WIX lower protons }
- - { name: bp4, in: [sfp0.2], out: [lemo4] } # Wix upper veto
- - { name: bp5, in: [sfp0.4], out: [lemo5] } # Wix lower veto
- - { name: bp6, in: [sfp1.2], out: [lemo6] } # mes upper veto
- - { name: bp7, in: [sfp1.4], out: [lemo7] } # mes lower veto
+ - { name: bp4, in: [sfp0.4], out: [lemo4, scaler4], label: MES upper veto }
+ - { name: bp5, in: [sfp0.2], out: [lemo5, scaler5], label: MES lower veto }
+ - { name: bp6, in: [sfp1.4], out: [lemo6, scaler6], label: WIX upper veto }
+ - { name: bp7, in: [sfp1.2], out: [lemo7, scaler7], label: WIX lower veto }
+ # - { name: bp7, in: [sfp1.2], out: [lemo7] } # mes lower veto
  #- { name: bp7, in: [sfp0.2, sfp0.4, sfp1.2, sfp1.4], out: [lemo7] } # bad proton
  - name: pulser1
    freq: 200
- - { name: bp8,  in: [lemo0, pulser1 ], out: [ sfp0.0, sfp1.0, scaler6 ], label: external }
+ - { name: bp8,  in: [lemo0, pulser1 ], out: [ sfp0.0, sfp1.0 ], label: external }
  - { name: pulser0, freq: 100 }
- - { name: bp9,  in: [lemo3, pulser0 ], out: [ sfp0.3, sfp1.3, scaler7 ], label: sync trigger }
+ - { name: bp9,  in: [lemo3, pulser0 ], out: [ sfp0.3, sfp1.3], label: sync trigger }
  - { name: pulser3, freq: 1 }
  - name: bp15
    in: [pulser3]
