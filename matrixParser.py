@@ -21,6 +21,7 @@ inputList=[
 ]
 outputList=[
     ("mbs(\d+)",           lambda n: 0+inRange(n, 1, 15)),
+    # mbs N actually sets the lines N[3:0]?!
     ("tbusX[.]?([0-7])",   lambda n:16+n),
     ("lemo([0-7])",        lambda n:24+n),
     ("lvds([0-7])",        lambda n:32+n),
