@@ -39,7 +39,9 @@ slave:
    label: bad proton
  # SFP -> TBus
  - name: bp3
-   in:  [sfp3.0]
+#   in:  [sfp3.0]
+# test: validate with proton trigger
+   in: [tbus0.3, tbus1.3, tbus0.6, tbus1.6]
    out: [tbusX.5, scaler3, lemo0]
    label: validation to febex
  - name: bp4
@@ -79,7 +81,7 @@ master:
 
 overlord:
  - require default
- - {name: set, addr: 0x00000082, val: 0x00000001} # TS clock: on, src=internal, LEMO out: NIM
+# - {name: set, addr: 0x00000082, val: 0x00000001} # TS clock: on, src=internal, LEMO out: NIM
  # sfp 0: MES master exploder
  # sfp 1: WIX master exploder
  - { name: bp0, in: [sfp0.3], out: [lemo0, scaler0], label: MES upper protons }
