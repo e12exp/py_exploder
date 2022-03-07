@@ -3,6 +3,7 @@ default:
  - {name: set, addr: 0x00000020, val: 0x10000000} # MBS Total dead time -> global dt
  - {name: set, addr: 0x00000080, val: 0x00000a64} # dead time
  - {name: set, addr: 0x00000081, val: 0x00000014} # output pulse length
+ - {name: set, addr: 0x00000081, val: 0x00000114} # output pulse length
  - {name: set, addr: 0x00000082, val: 0x00010001} # TS clock: on, src=internal, LEMO out: TTL
  # - {name: pulser3, freq: 1}
 
@@ -34,7 +35,7 @@ slave:
    label: good proton
  - name: bp2
    in:  [tbus0.6, tbus1.6]
-   out: [sfp3.2, scaler2]
+   out: [sfp3.2, scaler2, lvds1, lvds2, lvds3, lvds4, lvds5, lvds6, lvds7]
    label: bad proton
  # SFP -> TBus
  - name: bp3
