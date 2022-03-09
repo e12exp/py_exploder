@@ -35,13 +35,11 @@ slave:
    label: good proton
  - name: bp2
    in:  [tbus0.6, tbus1.6]
-   out: [sfp3.2, scaler2, lvds1, lvds2, lvds3, lvds4, lvds5, lvds6, lvds7]
+   out: [sfp3.2, scaler2]
    label: bad proton
  # SFP -> TBus
  - name: bp3
-#   in:  [sfp3.0]
-# test: validate with proton trigger
-   in: [tbus0.3, tbus1.3, tbus0.6, tbus1.6]
+   in:  [sfp3.0]
    out: [tbusX.5, scaler3, lemo0]
    label: validation to febex
  - name: bp4
@@ -65,13 +63,13 @@ master:
  - name: dt0 # readout request => readout (T1)
    in:  [ sfp1.0, sfp2.0]
    out: [ mbs1,  sfp1.1, sfp2.1, lemo7, scaler4]
-   label: Master T1
+   label: Califa Master T1
  - name: dt1 # Sync trigger (T3)
    in: [ sfp0.3 ]
    out: [ mbs3,  sfp1.3, sfp2.3, lemo7, scaler5 ]
    label: Master T3 (sync)
  # test: pulser 0 added to external trigger
- - { name: bp8,  in: [sfp0.0, pulser0], out: [ sfp1.0, sfp2.0 ], label: external }
+ - { name: bp8,  in: [sfp0.0, pulser0], out: [ sfp1.0, sfp2.0, lemo6, lvds0, lvds1, lvds2, lvds3, lvds4, lvds5, lvds6, lvds7 ], label: external }
  - { name: bp9,  in: [sfp1.1], out: [ sfp0.1 ], label: good proton from sfp1 }
  - { name: bp10, in: [sfp1.2], out: [ sfp0.2, scaler6 ], label: bad proton from sfp1 }
  - { name: bp11, in: [sfp2.1], out: [ sfp0.3 ], label: good proton from sfp2 }
