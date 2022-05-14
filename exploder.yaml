@@ -2,8 +2,8 @@ default:
 # see exploder configuration manual, page six for details.
  - {name: set, addr: 0x00000020, val: 0x10000000} # MBS Total dead time -> global dt
  - {name: set, addr: 0x00000080, val: 0x00000a64} # dead time
- - {name: set, addr: 0x00000081, val: 0x00000014} # output pulse length
- - {name: set, addr: 0x00000081, val: 0x00000114} # output pulse length
+# - {name: set, addr: 0x00000081, val: 0x00000014} # output pulse length
+ - {name: set, addr: 0x00000081, val: 0x00001114} # output pulse length
  - {name: set, addr: 0x00000082, val: 0x00010001} # TS clock: on, src=internal, LEMO out: TTL
  # - {name: pulser3, freq: 1}
 
@@ -40,7 +40,7 @@ slave:
  # SFP -> TBus
  - name: bp3
    in:  [sfp3.0]
-   out: [tbusX.5, scaler3, lemo0]
+   out: [tbusX.5, scaler3]
    label: validation to febex
  - name: bp4
    in:  [sfp3.1]
@@ -56,7 +56,7 @@ slave:
    label: slave scaler reset
 
 master:
- - require slave # bp0-7, tbus, sfp3, scaler0-3
+ - require slave # bp0-5, tbus, sfp3, scaler0-3
  # sfp0: link to overlord
  # sfp1-2: link to slaves
  # lemo out 7: Pexaria latch
@@ -69,13 +69,15 @@ master:
    out: [ mbs3,  sfp1.3, sfp2.3, lemo7, scaler5 ]
    label: Master T3 (sync)
  # test: pulser 0 added to external trigger
- - { name: bp8,  in: [sfp0.0, pulser0], out: [ sfp1.0, sfp2.0, lemo6, lvds0, lvds1, lvds2, lvds3, lvds4, lvds5, lvds6, lvds7 ], label: external }
- - { name: bp9,  in: [sfp1.1], out: [ sfp0.1 ], label: good proton from sfp1 }
+ - { name: bp8,  in: [sfp0.0, pulser0], out: [ sfp1.0, sfp2.0, lemo6 ], label: external }
+ # 
+ - { name: bp9,  in: [sfp1.1], out: [ sfp0.1, lvds0, lvds1, lvds2, lvds3,lvds4, lvds5, lvds6, lvds7 ], label: good proton from sfp1 }
  - { name: bp10, in: [sfp1.2], out: [ sfp0.2, scaler6 ], label: bad proton from sfp1 }
  - { name: bp11, in: [sfp2.1], out: [ sfp0.3 ], label: good proton from sfp2 }
- - { name: bp12, in: [sfp2.2], out: [ sfp0.4, scaler7 ], label: bad proton from sfp2 }
+ - { name: bp12, in: [sfp2.2], out: [ sfp0.4 ], label: bad proton from sfp2 }
  - { name: bp13, in: [ sfp1.0, sfp2.0], out: [], label: Master RO Req }
  - { name: bp14, in: [sfp0.4], out: [ sfp1.4, sfp2.4 ], label: Master Scaler Reset } 
+ - { name: bp6, in: [lemo2], out: [ tbusX.1, scaler7, lemo0 ], label: LOS pulser 2 patrick }
 
 overlord:
  - require default
@@ -90,11 +92,12 @@ overlord:
  - { name: bp5, in: [sfp0.2], out: [lemo5, scaler5], label: MES lower veto }
  - { name: bp6, in: [sfp1.4], out: [lemo6], label: WIX upper veto }
  - { name: bp7, in: [sfp1.2], out: [lemo7], label: WIX lower veto }
- - name: pulser1
-   freq: 200
- - { name: bp8,  in: [lemo0], out: [ sfp0.0, sfp1.0, scaler6 ], label: external }
- - { name: pulser0, freq: 100 }
- - { name: bp9,  in: [lemo2 ], out: [ sfp0.3, sfp1.3, scaler7], label: sync trigger }
+ - name: pulser1 # EXTERNAL from pulser
+   freq: 0
+ - { name: bp8,  in: [lemo0, pulser1], out: [ sfp0.0, sfp1.0, scaler6 ], label: external }
+# - { name: bp10,  in: [lemo0], out: [ scaler7 ], label: old external }
+ - { name: pulser0, freq: 0 }
+ - { name: bp9,  in: [lemo2, pulser0 ], out: [ sfp0.3, sfp1.3], label: sync trigger }
  - { name: pulser3, freq: 1 }
  - name: bp15
    in: [pulser3]
@@ -108,5 +111,5 @@ butters: # messel
 kyle:
   9c:46:f6:7f:93:c1:1d:b1: master
   9c:0e:69:5d:88:10:d5:b1: slave
-wendy:
+stan:
   9f:47:f1:06:fd:b7:9d:30: overlord
